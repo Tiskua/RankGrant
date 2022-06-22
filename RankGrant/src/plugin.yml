@@ -1,0 +1,10 @@
+main: me.tiskua.rankgrant.main.Main
+author: Tiskua
+version: 1.8.0
+name: RankGrant
+api-version: 1.13
+
+commands:
+  Grant:
+  Grantadmin:
+    

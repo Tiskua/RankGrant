@@ -1,0 +1,165 @@
+# // The command that will run when you grant a rank
+# // This can be used for multiple different permission plugins 
+# // DO NOT INCLUDE THE SLASH (/)
+
+# // {target} is the player that you are giving the rank to
+# // {rank} is the rank that will be given to the target
+# // {duration} is how long the rank will be given for
+Commands:
+  Ranks:
+    forever: 'lp user {target} parent set {rank}' 
+    # // If your permission plugin does not support giving ranks for a duration of time
+    # // then just put the same command for both
+    timed: 'lp user {target} parent addtemp {rank} {duration}s'
+
+  Permissions:
+    Give:
+      forever: 'lp user {target} permission set {permission}' 
+      # // If your permission plugin does not support giving ranks for a duration of time
+      # // then just put the same command for both
+      timed: 'lp user {target} permission settemp {permission} {duration}s'
+    Remove: 
+      forever: 'lp user {target} permission unset {permission}' 
+      # // If your permission plugin does not support giving ranks for a duration of time
+      # // then just put the same command for both
+      timed: 'lp user {target} permission unsettemp {permission} {duration}s'
+
+
+#// The ranks that can be given to players
+Permissions:
+  essentialsall:
+  #// What slot the rank will be displayed in the GUI
+    slot: 10
+     # // The displayname of the item in the GUI
+    displayname: '&a&lessentials.*'
+    #// The item that will appear for the rank in the GUI
+    #// Format for item types: item name:color (optional) (i.e. WOOL:3 --> Light Blue Wool)
+    item_type: WOOL:4
+    # // The name of the rank in your permission plugin (CASE SENSITIVE)
+    permission: essentials.*
+  luckpermsall:
+    slot: 11
+    displayname: '&a&lluckperms.*'
+    item_type: WOOL:14
+    permission: luckperms.*
+
+
+#// The ranks that can be given to players
+Ranks:
+  Owner:
+  #// What slot the rank will be displayed in the GUI
+    slot: 10
+     # // The displayname of the item in the GUI
+    displayname: '&6&lOwner'
+    #// The item that will appear for the rank in the GUI
+    #// Format for item types: item name:color (optional) (i.e. WOOL:3 --> Light Blue Wool)
+    item_type: WOOL:4
+    # // The name of the rank in your permission plugin (CASE SENSITIVE)
+    rank: Owner
+  Admin:
+    slot: 11
+    displayname: '&c&lAdmin'
+    item_type: WOOL:14
+    rank: Admin
+  Default:
+    slot: 12
+    displayname: '&7&lDefault'
+    item_type: WOOL:8
+    rank: default
+ 
+ 
+# //Type the duration you want    
+Duration:
+  30_minutes:
+  # // The displayname of the item in the GUI
+    displayname: '&e&l30 Minutes'
+    #// How long the rank will be given for (IN SECONDS)
+    duration: 1800
+    # // What slot the rank will be displayed in the GUI
+    slot: 10
+  1_hour:
+    displayname: '&e&l1 Hour'
+    duration: 3600
+    slot: 11
+  1_day:
+    displayname: '&e&l1 Day'
+    duration: 86400
+    slot: 12
+  1_week:
+    displayname: '&e&l1 Week'
+    duration: 604800
+    slot: 13
+  1_month:
+    displayname: '&e&l1 Month'
+    duration: 2628000
+    slot: 14
+  1_year:
+    displayname: '&e&l1 Year'
+    duration: 31536000
+    slot: 15
+  # // Put -1 if you want the the rank to be permenant
+  forever:
+    displayname: '&e&lForever'
+    duration: -1
+    slot: 16
+    
+# // The reason for giving the rank
+Reason:
+  Promotion:
+    displayname: '&b&lPromotion'
+    reason: 'Promotion'
+    slot: 10
+  Demotion:
+    displayname: '&b&lDemotion'
+    reason: 'Demotion'
+    slot: 11
+  Famous:
+    displayname: '&b&lFamous'
+    reason: 'Famous'
+    slot: 12
+  Other:
+    displayname: '&b&lOther'
+    reason: 'Other'
+    slot: 13
+    
+# // Plays a sound when you grant a player a rank    
+Sound_settings: 
+  sound: "LEVEL_UP"
+  volume: 10
+  pitch: 10  
+
+# // The item of the border in the GUIS
+Border:
+  Inner:
+    item: STAINED_GLASS_PANE:8
+  Outer:
+    item: STAINED_GLASS_PANE:7
+    
+    
+# // The message that the person who granted the rank will recieve    
+Messages:
+  Grant:
+    Rank:
+      Staff: 
+        - "&7[&6&lRankGrant&7] &e{granter}&7 granted &e{target}&7 the rank &e{rank}&7 for &e{duration}&7 because &e{reason}"
+      Granter:
+        - "&7--------------------"
+        - "&7&lYou have granted a rank to &7: &e&l{target}"
+        - "   &bRank&7:&7 {rank}"
+        - "   &aDuration&7:&7 {duration}"
+        - "   &9Reason&7:&7 {reason}"
+        - "&7--------------------"
+    Permission:
+      Staff: 
+        - "&7[&6&lRankGrant&7] &e{granter}&7 granted &e{target}&7 the permission &e{permission}&7 for &e{duration}&7 because &e{reason}"
+      Granter:
+        - "&7--------------------"
+        - "&7&lYou have given a permission to &7: &e&l{target}"
+        - "   &bPermission&7:&7 {permission} : &d{trueorfalse}"
+        - "   &aDuration&7:&7 {duration}"
+        - "   &9Reason&7:&7 {reason}"
+        - "&7--------------------"
+
+    
+
+    
