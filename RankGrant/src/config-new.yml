@@ -44,7 +44,7 @@ Permissions:
     # // The item that will appear for the rank in the GUI
     # // Format for item types: item_name:color (optional) (i.e. WOOL:3 --> Light Blue Wool)
     # // Note: This only has to be done in versions previous of 1.13
-    item_type: WOOL:1
+    item_type: YELLOW_WOOL
     # // The name of the rank in your permission plugin (CASE SENSITIVE)
     permission: essentials.*
     # // The lore of the item (Can be as big or short as you want) 
@@ -56,7 +56,7 @@ Permissions:
   luckpermsall:
     slot: 11
     displayname: '&a&lluckperms.*'
-    item_type: WOOL:5
+    item_type: LIME_WOOL
     permission: luckperms.*
     lore:
       - "&7&m-----------------"
@@ -78,7 +78,7 @@ Ranks:
     displayname: '&6&lOwner'
     #// The item that will appear for the rank in the GUI
     #// Format for item types: item name:color (optional) (i.e. WOOL:3 --> Light Blue Wool)
-    item_type: WOOL:4
+    item_type: YELLOW_WOOL
     # // The name of the rank in your permission plugin (CASE SENSITIVE)
     rank: Owner
     # // The lore of the item (Can be as big or short as you want) 
@@ -90,7 +90,7 @@ Ranks:
   Admin:
     slot: 11
     displayname: '&c&lAdmin'
-    item_type: WOOL:14
+    item_type: RED_WOOL
     rank: Admin
     lore:
       - "&7&m-----------------"
@@ -100,7 +100,7 @@ Ranks:
   Default:
     slot: 12
     displayname: '&7&lDefault'
-    item_type: WOOL:8
+    item_type: GRAY_WOOL
     rank: default
     lore:
       - "&7&m-----------------"
@@ -196,7 +196,7 @@ Reason:
 # // Plays a sound when you grant a player a rank    
 Sound_settings: 
   # // The actual sound effect that will play (Some sounds are different in other versions)
-  sound: "LEVEL_UP"
+  sound: "ENTITY_PLAYER_LEVELUP"
   # // The volume of the sound effect
   volume: 10
   # // The putch of the sound effect
@@ -206,10 +206,10 @@ Sound_settings:
 Border:
   # // All of the other slots (Not perimeter slots)
   Inner:
-    item: STAINED_GLASS_PANE:8
+    item: GRAY_STAINED_GLASS_PANE
   # // The perimeter slots in the GUI
   Outer:
-    item: STAINED_GLASS_PANE:7
+    item: BLACK_STAINED_GLASS_PANE
     
 # // The message that the person who granted the rank will recieve    
 Messages:
@@ -227,7 +227,7 @@ Messages:
         - "   &aDuration&7:&7 {duration}"
         - "   &9Reason&7:&7 {reason}"
         - "&7--------------------"
-      # // The message sent to the target if the target is online (The player recieving the grant)
+        # // The message sent to the target if the target is online(The player recieving the grant)
       Target:
         - "&aYou have been granted the rank &f{rank} &afor &f{duration} &abecause &f{reason} &aby &f{granter}"
     Permission:
@@ -242,5 +242,7 @@ Messages:
         - "&7--------------------"
       Target:
         - "&aYou have been granted the permission &f{permission} : {trueorfalse} &afor &f{duration} &abecause &f{reason} &aby &f{granter}"
+
+    
 
     

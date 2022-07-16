@@ -10,8 +10,8 @@ public class GUIManager {
 	private static Inventory reason;
 	private static Inventory rank;
 	private static Inventory perm;
-	private static Inventory truefalse;
 	private static Inventory confirm;
+	private static Inventory log;
 	
 	
 	public static Inventory getMainGUI() {
@@ -54,14 +54,6 @@ public class GUIManager {
 		perm = permGui;
 	}
 
-	public static Inventory getTruefalseGui() {
-		return truefalse;
-	}
-
-	public static void setTruefalseGui(Inventory truefalseGui) {
-		truefalse = truefalseGui;
-	}
-
 	public static Inventory getConfirmGui() {
 		return confirm;
 	}
@@ -69,4 +61,15 @@ public class GUIManager {
 	public static void setConfirmGui(Inventory confirmGui) {
 		confirm = confirmGui;
 	}
+	public static Inventory getLogGUI() {
+		return log;
+	}
+
+	public static void setLogGui(Inventory logGui) {
+		log = logGui;
+	}
+	
+	
+
+	
 }
