@@ -1,4 +1,4 @@
-package me.tiskua.rankgrant.utils;
+package me.tiskua.rankgrant.Grant;
 
 import org.bukkit.entity.Player;
 

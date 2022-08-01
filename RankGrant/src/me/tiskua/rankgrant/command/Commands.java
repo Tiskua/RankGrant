@@ -1,4 +1,4 @@
-package me.tiskua.rankgrant.utils;
+package me.tiskua.rankgrant.command;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -8,19 +8,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import me.tiskua.rankgrant.GUI.GUIBasics;
 import me.tiskua.rankgrant.GUI.GUIManager;
 import me.tiskua.rankgrant.GUI.GUIS;
+import me.tiskua.rankgrant.Grant.GrantManager;
 import me.tiskua.rankgrant.main.Files;
 import me.tiskua.rankgrant.main.Main;
+import me.tiskua.rankgrant.utils.Util;
 
 public class Commands implements CommandExecutor {
 
-	Main main;
-	GUIS gui;
-	public Commands(Main main, GUIS gui) {
-		this.main = main;
-		this.gui = gui;
-	}
+	Main main = Main.getMain();
+	GUIS gui = main.gui;
 
 	
 
@@ -49,6 +48,7 @@ public class Commands implements CommandExecutor {
 				if(gui.customReason.contains(player)) gui.customReason.remove(player);
 				GrantManager.setGranter(player);
 				gui.createMainGUI();
+				new GUIBasics().addBackButtons();
 				player.openInventory(GUIManager.getMainGUI());
 			} else player.sendMessage(ChatColor.RED + "Usage: /grant <player>");
 

@@ -1,5 +1,7 @@
 package me.tiskua.rankgrant.GUI;
 
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -10,20 +12,10 @@ import me.tiskua.rankgrant.utils.ItemCreator;
 
 public class GUIBasics {
 		
-	Inventory inv;
-	
-	Main main;
-	public GUIBasics(Main main) {
-		this.main = main;
-	}
+	Main main = Main.getMain();
 	
 	
-	public GUIBasics(Inventory inv) {
-		this.inv = inv;
-	}
-	
-	
-	public GUIBasics setBorders() {
+	public void setBorders(Inventory inv) {
 		ItemStack innerBorder = new ItemCreator(Files.config.getString("Border.Inner.item")).setDisplayname(" ").formatItem().buildItem();
 		ItemStack outerBorder = new ItemCreator(Files.config.getString("Border.Outer.item")).setDisplayname(" ").formatItem().buildItem();
 
@@ -44,13 +36,14 @@ public class GUIBasics {
 			inv.setItem(9*i, outerBorder);
 			inv.setItem(9*i+8, outerBorder);
 		}
-		return this;
 	}
 	
 
-	public GUIBasics addBackButton() {
-		inv.setItem(inv.getSize()-9, new ItemCreator(Material.ARROW).setDisplayname("&c&lBack").buildItem());
-		return this;
+	public void addBackButtons() {
+		for(Map.Entry<Inventory, Inventory> entry : GUIManager.getBackButtonInvs().entrySet()) {
+			Inventory invs = entry.getKey();
+			invs.setItem(invs.getSize()-9, new ItemCreator(Material.ARROW).setDisplayname("&c&lBack").buildItem());
+		}
 		
 	}
 	

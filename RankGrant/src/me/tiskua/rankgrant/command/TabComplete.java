@@ -1,4 +1,4 @@
-package me.tiskua.rankgrant.utils;
+package me.tiskua.rankgrant.command;
 
 import java.util.ArrayList;
 import java.util.List;

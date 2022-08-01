@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
+import me.tiskua.rankgrant.Grant.GrantManager;
+
 public class Util {
 
 	public static String format(String msg) {
@@ -27,24 +29,26 @@ public class Util {
 		return false;
 	}
 
-	public static String replaceRankValues(String msg) {
-		String replacedMessage = msg.replace("{target}", GrantManager.getTarget())
+	public static String replaceMessageValues(String msg) {
+		String replacedMessage = "N/A";
+		if(GrantManager.getGrantOption() == "Rank") 
+			replacedMessage = msg.replace("{target}", GrantManager.getTarget())
 				.replace("{granter}", GrantManager.getGranter().getName())
 				.replace("{rank}", GrantManager.getTargetRank())
 				.replace("{reason}", GrantManager.getGrantReason())
 				.replace("{duration}", buildTimeMeasurements(GrantManager.getGrantDuration()));
-		return replacedMessage;
-	}
-
-	public static String replacePermissionValues(String msg) {
-		String replacedMessage = msg.replace("{target}", GrantManager.getTarget())
+		
+		else if(GrantManager.getGrantOption() == "Permission")
+			replacedMessage = msg.replace("{target}", GrantManager.getTarget())
 				.replace("{granter}", GrantManager.getGranter().getName())
 				.replace("{permission}", GrantManager.getPermission())
 				.replace("{trueorfalse}", GrantManager.getPermBoolean())
 				.replace("{reason}", GrantManager.getGrantReason())
 				.replace("{duration}", buildTimeMeasurements(GrantManager.getGrantDuration()));
+		
 		return replacedMessage;
 	}
+
 
 
 	public static String buildTimeMeasurements(int time) {
@@ -84,12 +88,12 @@ public class Util {
 		return (time/divider) + string;
 
 	}
-	
+
 	public static int durationToSeconds(String time)  {
 		String[] arr = time.split(" ");
 		int duration = Integer.parseInt(arr[0]);
 		int multiplier = 0;
-		
+
 		if(time.contains("year")) 
 			multiplier = 31536000;
 		else if(time.contains("month")) 
@@ -105,8 +109,8 @@ public class Util {
 		else if(time.contains("second")) 
 			multiplier = 1;
 
-			
-		
+
+
 		return duration * multiplier;
 	}
 

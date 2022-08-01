@@ -1,5 +1,7 @@
 package me.tiskua.rankgrant.GUI;
 
+import java.util.HashMap;
+
 import org.bukkit.inventory.Inventory;
 
 public class GUIManager {
@@ -12,6 +14,7 @@ public class GUIManager {
 	private static Inventory perm;
 	private static Inventory confirm;
 	private static Inventory log;
+	private static HashMap<Inventory, Inventory> backButtonInvs = new HashMap<>();
 	
 	
 	public static Inventory getMainGUI() {
@@ -68,6 +71,13 @@ public class GUIManager {
 	public static void setLogGui(Inventory logGui) {
 		log = logGui;
 	}
+	public static void addBackButtonInvs(Inventory from, Inventory to) {
+		backButtonInvs.put(from, to);
+	}
+	public static HashMap<Inventory, Inventory> getBackButtonInvs() {
+		return backButtonInvs;
+	}
+
 	
 	
 

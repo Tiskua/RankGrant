@@ -10,21 +10,37 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import me.tiskua.rankgrant.GUI.GUIEvents;
 import me.tiskua.rankgrant.GUI.GUIS;
-import me.tiskua.rankgrant.utils.Commands;
-import me.tiskua.rankgrant.utils.TabComplete;
+import me.tiskua.rankgrant.Grant.Grant;
+import me.tiskua.rankgrant.Grant.Messages;
+import me.tiskua.rankgrant.command.Commands;
+import me.tiskua.rankgrant.command.TabComplete;
 import me.tiskua.rankgrant.utils.Util;
 
 public class Main extends JavaPlugin implements Listener{
 
-	GUIS gui = new GUIS(this);
+	
+	private static Main main_instance;
+	
 //	public MySQL SQL;
 	
-	GUIEvents click = new GUIEvents(gui, this);
-	Commands cmd = new Commands(this, gui);
+	public GUIS gui; 
+	public Messages messages;
+	public Grant grant;
+	
+	public GUIEvents click; 
+	public Commands cmd;
 
 	@Override
 	public void onEnable() {
+		setMainInstance(this);
+		messages = new Messages();
+		grant = new Grant();
+		gui = new GUIS();
+		click = new GUIEvents();
+		cmd = new Commands();
+		
 		Files.base(this);
+		
 //		
 //		this.SQL = new MySQL();
 //		
@@ -56,11 +72,20 @@ public class Main extends JavaPlugin implements Listener{
 
 		});
 		createGUIS();
+		
+		
 	}
 	
 	@Override
 	public void onDisable() {
 //		SQL.disconnect();
+	}
+	
+	private void setMainInstance(Main instance) {
+		main_instance = instance;
+	}
+	public static Main getMain() {
+		return main_instance;
 	}
 	
 	@EventHandler
@@ -86,5 +111,6 @@ public class Main extends JavaPlugin implements Listener{
 		gui.createReasonGUI();
 		gui.createConfirmGUI();
 		gui.createLogGUI();
+		
 	}
 }

@@ -10,23 +10,25 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
+import me.tiskua.rankgrant.Grant.Grant;
+import me.tiskua.rankgrant.Grant.GrantManager;
 import me.tiskua.rankgrant.main.Files;
 import me.tiskua.rankgrant.main.Main;
-import me.tiskua.rankgrant.utils.GrantManager;
 import me.tiskua.rankgrant.utils.ItemCreator;
 import me.tiskua.rankgrant.utils.Util;
 
 public class GUIEvents implements Listener{
 
-	GUIS gui;
-	Main main;
-	public GUIEvents(GUIS gui, Main main) {
-		this.gui = gui;
-		this.main = main;
-	}
+
+	Main main = Main.getMain();
+	GUIS gui = main.gui;
+	Grant grant = main.grant;
 
 	@EventHandler
 	public void chooseGrantOption(InventoryClickEvent event) {
@@ -35,6 +37,7 @@ public class GUIEvents implements Listener{
 		if(event.getCurrentItem() == null) return;
 
 		event.setCancelled(true);
+		
 		int slot = event.getSlot();
 
 		if(slot == 12) {
@@ -56,10 +59,8 @@ public class GUIEvents implements Listener{
 		int slot = event.getSlot();
 
 		Player player = (Player) event.getWhoClicked();
-		if(slot == event.getInventory().getSize()-9 && event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(Util.format("&c&lBack"))) {
-			player.openInventory(GUIManager.getMainGUI());
-			return;
-		}
+
+		if(previousInv(player, event.getCurrentItem(), slot, event.getInventory(), GUIManager.getBackButtonInvs().get(event.getInventory()))) return;
 		if(!gui.ranks.containsKey(slot)) return;
 
 		if(Files.config.getBoolean("ranks-need-permission")) {
@@ -94,10 +95,7 @@ public class GUIEvents implements Listener{
 				GrantManager.setPermBoolean("True");
 			}
 		}
-		if(slot == event.getInventory().getSize()-9 && event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(Util.format("&c&lBack"))) {
-			player.openInventory(GUIManager.getMainGUI());
-			return;
-		}
+		if(previousInv(player, event.getCurrentItem(), slot, event.getInventory(), GUIManager.getBackButtonInvs().get(event.getInventory()))) return;
 		if(!gui.permissions.containsKey(slot)) return;
 
 		if(Files.config.getBoolean("permissions-need-permission")) {
@@ -124,10 +122,8 @@ public class GUIEvents implements Listener{
 
 		Player player = (Player) event.getWhoClicked();
 
-		if(slot == event.getInventory().getSize()-9 && event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(Util.format("&c&lBack"))) {
-			player.openInventory(GrantManager.getGrantOption().equals("Rank") ? GUIManager.getRankGui() : GUIManager.getPermGui());
-			return;
-		}
+		if(previousInv(player, event.getCurrentItem(), slot, event.getInventory(), GrantManager.getGrantOption() == "Rank" ? GUIManager.getRankGui() : GUIManager.getPermGui())) return;
+		
 		if(!gui.durations.containsKey(slot)) return;
 		if(gui.durations.get(slot) == -2) {
 			gui.customDuration.add(player);
@@ -149,10 +145,7 @@ public class GUIEvents implements Listener{
 		int slot = event.getSlot();
 
 		Player player = (Player) event.getWhoClicked();
-		if(slot == event.getInventory().getSize()-9 && event.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(Util.format("&c&lBack"))) {			
-			player.openInventory(GUIManager.getDurationGUI());
-			return;
-		}
+		if(previousInv(player, event.getCurrentItem(), slot, event.getInventory(), GUIManager.getBackButtonInvs().get(event.getInventory()))) return;
 		if(!gui.reasons.containsKey(slot)) return;
 		if(gui.reasons.get(slot).equals("custom-reason")) {
 			gui.customReason.add(player);
@@ -192,7 +185,7 @@ public class GUIEvents implements Listener{
 		event.setCancelled(true);
 		Player player = (Player) event.getWhoClicked();
 		if(event.getCurrentItem().hasItemMeta() && event.getCurrentItem().getItemMeta().getDisplayName().contains("Confirm")) {
-			gui.grantAction((Player) event.getWhoClicked());
+			grant.grantAction(player);
 			player.closeInventory();
 		}
 
@@ -225,34 +218,43 @@ public class GUIEvents implements Listener{
 	}
 
 
-//	@EventHandler
-//	public void closeInventory(InventoryCloseEvent event) {
-//		if(event.getInventory().equals(GUIManager.getLogGUI())) {
-//			gui.page = 0;
-//			gui.updateLogsInv();
-//		}
-//
-//		Player player = (Player) event.getPlayer();
-//		Inventory inv = event.getInventory();
-//
-//		if(!inv.equals(GUIManager.getMainGUI()) 
-//				&& !inv.equals(GUIManager.getRankGui())
-//				&& !inv.equals(GUIManager.getPermGui())
-//				&& !inv.equals(GUIManager.getDurationGUI())
-//				&& !inv.equals(GUIManager.getReasonGUI())) {
-//			return;
-//		}
-//		if(inv.equals(GUIManager.getConfirmGui())) 
-//			return;
-//		if(inv.equals(GUIManager.getLogGUI())) 
-//			return;
-//
-//		if(gui.customDuration.contains(player) || gui.customReason.contains(player))
-//			return;
-//
-//		player.sendMessage("INB" + event.getInventory().getName());
-//
-//	}
+	@EventHandler
+	public void closeInventory(InventoryCloseEvent event) {
+		if(event.getInventory().equals(GUIManager.getLogGUI())) {
+			gui.page = 0;
+			gui.updateLogsInv();
+		}
+
+		Player player = (Player) event.getPlayer(); 
+		Inventory inv = event.getInventory();
+
+		if(!inv.equals(GUIManager.getMainGUI()) 
+				&& !inv.equals(GUIManager.getRankGui())
+				&& !inv.equals(GUIManager.getPermGui())
+				&& !inv.equals(GUIManager.getDurationGUI())
+				&& !inv.equals(GUIManager.getReasonGUI())) {
+			return;
+		}
+		if(inv == GUIManager.getConfirmGui() || inv == GUIManager.getLogGUI()) 
+			return;
+
+		if(gui.customDuration.contains(player) || gui.customReason.contains(player))
+			return;
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				String inv_string = player.getOpenInventory().getTitle().toString();
+				if(inv_string.equals("container.crafting")) {
+					player.sendMessage("Cancelled Grant");
+					return;
+				}
+			}
+			
+		}.runTaskLater(main, 5);
+
+
+	}
 
 	@EventHandler 
 	public void custom(AsyncPlayerChatEvent event) {
@@ -301,5 +303,14 @@ public class GUIEvents implements Listener{
 			player.openInventory(inv);
 		});
 
+	}
+	
+	public boolean previousInv(Player player, ItemStack item, int slot, Inventory from, Inventory to) {
+		if(slot == from.getSize()-9 && item.getItemMeta().getDisplayName().equalsIgnoreCase(Util.format("&c&lBack"))) {
+			player.closeInventory();
+			player.openInventory(to);
+			return true;
+		}
+		return false;
 	}
 }

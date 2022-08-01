@@ -13,25 +13,21 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
+import me.tiskua.rankgrant.Grant.GrantManager;
 import me.tiskua.rankgrant.main.Files;
 import me.tiskua.rankgrant.main.Main;
-import me.tiskua.rankgrant.utils.GrantManager;
 import me.tiskua.rankgrant.utils.ItemCreator;
 import me.tiskua.rankgrant.utils.Util;
 
 
 public class GUIS implements Listener{
 
-	Main main;
-	public GUIS(Main plugin) {
-		main = plugin;
-	}
-	
+	private Main main = Main.getMain();
+	private GUIBasics basics = new GUIBasics();
 	public ArrayList<String> logs = new ArrayList<>();
 	
 	
@@ -39,8 +35,6 @@ public class GUIS implements Listener{
 	public HashMap<Integer, String> reasons= new HashMap<>();
 	public HashMap<Integer, String> ranks = new HashMap<>();
 	public HashMap<Integer, String> permissions = new HashMap<>();
-	
-	
 	
 	public ArrayList<Player> customReason = new ArrayList<>();
 	public ArrayList<Player> customDuration = new ArrayList<>();
@@ -52,30 +46,35 @@ public class GUIS implements Listener{
 	public void createMainGUI() {
 		error_GUI = "Main GUI";
 		GUIManager.setMainGUI(Bukkit.createInventory(null, 27, "Grant: " + GrantManager.getTarget()));
-		new GUIBasics(GUIManager.getMainGUI()).setBorders();	
+		basics.setBorders(GUIManager.getMainGUI());	
 		GUIManager.getMainGUI().setItem(12, new ItemCreator(Material.DIAMOND).setDisplayname("&a&lRanks").buildItem());
 		GUIManager.getMainGUI().setItem(14, new ItemCreator(Material.EMERALD).setDisplayname("&a&lPermissions").buildItem());
+		GUIManager.addBackButtonInvs(GUIManager.getRankGui(), GUIManager.getMainGUI());
+		GUIManager.addBackButtonInvs(GUIManager.getPermGui(), GUIManager.getMainGUI());
 	}
 
 	public void createRankGui() {
 		error_GUI = "Rank GUI";
 		main.getLogger().info("Loading Rank GUI");
 		GUIManager.setRankGui(Bukkit.createInventory(null, 36, "Rank"));
-		new GUIBasics(GUIManager.getRankGui()).setBorders().addBackButton();
+		basics.setBorders(GUIManager.getRankGui());
 		setRanks();
 		main.getLogger().info("Created Rank GUI");
+		
+		System.out.println(GUIManager.getMainGUI());
 	}
 
 	public void createPermissionsGui() {
 		error_GUI = "Permission GUI";
 		main.getLogger().info("Loading Permission GUI");
 		GUIManager.setPermGui(Bukkit.createInventory(null, 36, "Permission"));
-		new GUIBasics(GUIManager.getPermGui()).setBorders().addBackButton();
+		basics.setBorders(GUIManager.getPermGui());
 		setPermissions();
 		if(Util.isLegacy()) GUIManager.getPermGui().setItem(8, new ItemCreator(Material.INK_SACK).setDisplayname("&a&lGive").setDurability((short) 10).buildItem());
 		else GUIManager.getPermGui().setItem(8, new ItemCreator(Material.valueOf("LIME_DYE")).setDisplayname("&a&lGive").buildItem());
 		GrantManager.setPermBoolean("True");
 		main.getLogger().info("Created Permission GUI");
+		
 	}
 	
 	public void resetPermBool() {
@@ -89,8 +88,8 @@ public class GUIS implements Listener{
 		error_GUI = "Duration GUI";
 		main.getLogger().info("Loading Duration GUI");
 		GUIManager.setDurationGUI(Bukkit.createInventory(null, 36, "Duration"));
-		new GUIBasics(GUIManager.getDurationGUI()).setBorders().addBackButton();		
-
+		basics.setBorders(GUIManager.getDurationGUI());		
+		GUIManager.addBackButtonInvs(GUIManager.getDurationGUI(), GUIManager.getRankGui());
 		for(String duration : Files.config.getConfigurationSection("Duration").getKeys(false)) {
 			int slot = Files.config.getInt("Duration." + duration + ".slot");
 			String displayName = Util.format(Files.config.getString("Duration." + duration + ".displayname"));
@@ -106,8 +105,8 @@ public class GUIS implements Listener{
 		error_GUI = "Reason GUI";
 		main.getLogger().info("Loading Reason GUI");
 		GUIManager.setReasonGUI(Bukkit.createInventory(null, 36, "Reason"));
-		new GUIBasics(GUIManager.getReasonGUI()).setBorders().addBackButton();
-		
+		basics.setBorders(GUIManager.getReasonGUI());
+		GUIManager.addBackButtonInvs(GUIManager.getReasonGUI(), GUIManager.getDurationGUI());
 		for(String reason : Files.config.getConfigurationSection("Reason").getKeys(false)) {
 			int slot = Files.config.getInt("Reason." + reason + ".slot");
 			String displayName = ChatColor.translateAlternateColorCodes('&', Files.config.getString("Reason." + reason + ".displayname"));
@@ -133,7 +132,7 @@ public class GUIS implements Listener{
 			 confirm = new ItemCreator(Material.valueOf("GREEN_WOOL")).setDisplayname("&2&lConfirm").buildItem();	
 		}
 		int s = 10;
-		new GUIBasics(GUIManager.getConfirmGui()).setBorders();
+		basics.setBorders(GUIManager.getConfirmGui());
 		
 		for(int i = 0; i<3; i++) 
 			for(int j = 0; j<3; j++) 
@@ -156,7 +155,7 @@ public class GUIS implements Listener{
 		}
 			
 		GUIManager.setLogGui(Bukkit.createInventory(null, 54, "Logs"));
-		new GUIBasics(GUIManager.getLogGUI()).setBorders();
+		basics.setBorders(GUIManager.getLogGUI());
 	
 		Set<String> data = Files.log.getConfigurationSection("Logs").getKeys(false);
 		logs.clear();
@@ -193,119 +192,6 @@ public class GUIS implements Listener{
 	}
 
 
-
-	public void grantAction(Player player) {
-		//sound
-		try {
-			float volume = (float) Files.config.getDouble("Sound_settings.volume");
-			float pitch = (float) Files.config.getDouble("Sound_settings.pitch");
-			player.playSound(player.getLocation(), Sound.valueOf(Files.config.getString("Sound_settings.sound")), volume, pitch);
-		} catch(IllegalArgumentException e) {
-			player.sendMessage(ChatColor.RED + "There was an error playing the sound! "
-					+ "\n Sound: " + Files.config.getString("Sound_settings.sound") 
-					+ "\n Volume: " + Files.config.getDouble("Sound_settings.pitch")
-					+ "\n Pitch: " + Files.config.getDouble("Sound_settings.pitch")
-					+ "\n Check the sound, volume, and pitch (Some sounds are different in newer versions)");
-		}
-		
-
-		//Message
-		Player target = Bukkit.getPlayer(GrantManager.getTarget());
-		StringBuilder finalmessage = new StringBuilder();
-		
-		if(GrantManager.getGrantOption() == "Rank") {
-			for (String msg : Files.config.getStringList("Messages.Grant.Rank.Granter")) 
-				finalmessage.append(Util.replaceRankValues(msg) + "\n");
-			
-			player.sendMessage(Util.format(finalmessage.toString()));
-			for(String line : Files.config.getStringList("Messages.Grant.Rank.Target")) 
-				if(target != null) target.sendMessage(Util.format(Util.replaceRankValues(line)));
-			
-			sendGrantStaffMessage(player);
-			
-		} else if(GrantManager.getGrantOption() == "Permission") {
-			for (String msg : Files.config.getStringList("Messages.Grant.Permission.Granter")) 
-				finalmessage.append(Util.replacePermissionValues(msg) + "\n");
-			
-			player.sendMessage(Util.format(finalmessage.toString()));
-			for(String line : Files.config.getStringList("Messages.Grant.Permission.Target")) 
-				if(target != null) target.sendMessage(Util.format(Util.replacePermissionValues(line)));
-			
-			sendGrantStaffMessage(player);
-		}
-		//Save to log
-		saveLog();
-		//Command
-		buildCommand(player);
-	}
-	
-	private void sendGrantStaffMessage(Player staff) {
-		for(Player online : Bukkit.getOnlinePlayers()) {
-			if(online.hasPermission("grant.notify") && online != staff) {
-				StringBuilder finalStaffmessage = new StringBuilder();
-				if(GrantManager.getGrantOption().equals("Permission")) {
-					for (String msg : Files.config.getStringList("Messages.Grant.Permission.Staff")) 
-						finalStaffmessage.append(Util.replacePermissionValues(msg) + "\n");					
-				} else if(GrantManager.getGrantOption().equals("Rank")) {
-					for (String msg : Files.config.getStringList("Messages.Grant.Rank.Staff")) 
-						finalStaffmessage.append(Util.replaceRankValues(msg) + "\n");
-				}
-				
-				online.sendMessage(Util.format(finalStaffmessage.toString()));
-			}
-		}
-	}
-
-
-	private void buildCommand(Player player) {
-		if(GrantManager.getGrantOption() == "Rank") {
-			String finalTimedRankCommand = replaceRankCommand(Files.config.getString("Commands.Ranks.timed"));			
-			String finalPermRankCommand = replaceRankCommand(Files.config.getString("Commands.Ranks.forever"));
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), GrantManager.getGrantDuration() == -1 ? finalPermRankCommand : finalTimedRankCommand );
-			
-		}else if(GrantManager.getGrantOption() == "Permission") {
-			String finalTimedPermissionCommand = replacePermCommand
-					(Files.config.getString(GrantManager.getPermBoolean().equalsIgnoreCase("True") ? "Commands.Permissions.Give.timed" : "Commands.Permissions.Remove.timed"));
-			String finalPermPermissionCommand = replacePermCommand
-					(Files.config.getString(GrantManager.getPermBoolean().equalsIgnoreCase("True") ? "Commands.Permissions.Give.forever" : "Commands.Permissions.Remove.forever")); 
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), (GrantManager.getGrantDuration() == -1) ? finalPermPermissionCommand : finalTimedPermissionCommand);
-		}
-	}
-
-	
-	private String replaceRankCommand(String command) {
-		String replaced = command 
-				.replace("{rank}", GrantManager.getTargetRank())
-				.replace("{target}", GrantManager.getTarget())
-				.replace("{duration}", String.valueOf(GrantManager.getGrantDuration()));
-		return replaced;
-	}
-	
-	private String replacePermCommand(String command) {
-		String replaced = command 
-				.replace("{permission}", GrantManager.getPermission())
-				.replace("{target}", GrantManager.getTarget())
-				.replace("{trueorfalse}", GrantManager.getPermBoolean())
-				.replace("{duration}", String.valueOf(GrantManager.getGrantDuration()));
-		return replaced;
-	}
- 
-
-	public void saveLog() {
-		Date date = new Date();
-		
-		Files.log.set("Logs." + date + ".granter", GrantManager.getGranter().getName());
-		
-		if(GrantManager.getGrantOption().equals("Rank")) Files.log.set("Logs." + date + ".rank", GrantManager.getTargetRank());
-		else  Files.log.set("Logs." + date + ".permission", GrantManager.getPermission() + " | " + GrantManager.getPermBoolean());
-		
-		Files.log.set("Logs." + date + ".duration", GrantManager.getGrantDuration());
-		Files.log.set("Logs." + date + ".reason", GrantManager.getGrantReason());
-		Files.log.set("Logs." + date + ".target", GrantManager.getTarget());
-		Files.savelog();
-		
-		createLogGUI();
-	}
 	
 	public void updateLogsInv() {
 		int xoffset = 0;
@@ -315,7 +201,7 @@ public class GUIS implements Listener{
 		Date now = new Date();
 		
 		GUIManager.getLogGUI().clear();
-		new GUIBasics(GUIManager.getLogGUI()).setBorders();
+		basics.setBorders(GUIManager.getLogGUI());
 		
 		if(page != (int) (logs.size()/28)) GUIManager.getLogGUI().setItem(GUIManager.getLogGUI().getSize()-1, new ItemCreator(Material.ARROW).setDisplayname("&a&lNext Page").buildItem()); 
 		if(page > 0) GUIManager.getLogGUI().setItem(GUIManager.getLogGUI().getSize()-9, new ItemCreator(Material.ARROW).setDisplayname("&a&lPrevious Page").buildItem());
