@@ -1,0 +1,9 @@
+name: RankGrant
+version: '${project.version}'
+main: me.tiskua.rankgrant.main.Main
+author: Tiskua
+api-version: 1.13
+
+commands:
+  Grant:
+  Grantadmin:
